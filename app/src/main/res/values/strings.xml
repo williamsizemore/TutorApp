@@ -25,9 +25,10 @@
     <!-- Strings related to register -->
     <string name="register" >Register</string>
     <string name="new_password">Enter a password</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="new_email">Enter an email</string>
     <string name="zip_code">Enter a zip code</string>
-    <string name="register_text">Not a member? <u>Register here!</u></string>
+    <string name="register_text"><u>Not a member? Register here!</u></string>
     <string name="first_name">First name</string>
     <string name="full_name">Full name (First Last)</string>
     <string name="last_name">Last name</string>
