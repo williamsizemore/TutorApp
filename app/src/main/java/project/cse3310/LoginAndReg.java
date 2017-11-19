@@ -3,6 +3,7 @@ package project.cse3310;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
@@ -29,10 +30,14 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,17 +66,32 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
      */
     private UserLoginTask mAuthTask = null;
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+
+    private EditText emailView;
+    private EditText passwordNewView;
+    private EditText passwordConfirmView;
+    private EditText nameView;
+    private EditText addressView;
+    private EditText stateView;
+    private EditText zipView;
+    private EditText phoneView;
+    private EditText birthDateView;
+
     private View mProgressView;
     private View mLoginFormView;
     private View regFormView;
+    private Button regButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //setContentView(R.layout.register_tutor);
+
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
         populateAutoComplete();
@@ -81,6 +101,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
 
         mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -93,7 +114,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                 return false;
             }
         });
-
+        //login button listener
         Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -101,7 +122,13 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                 attemptLogin();
             }
         });
-
+        // register button listener
+        Button regButton = findViewById(R.id.register_account);
+        regButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptReg(); }
+        });
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
@@ -202,6 +229,9 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
             mAuthTask.execute((Void) null);
         }
     }
+    /********************************
+     *   Register User Account      *
+     ********************************/
     private void attemptReg() {
         if (mAuthTask != null) {
             return;
@@ -211,22 +241,44 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        emailView= findViewById(R.id.new_email);
+        passwordNewView = findViewById(R.id.new_password);
+        passwordConfirmView = findViewById(R.id.confirm_password);
+        nameView = findViewById(R.id.full_name);
+        addressView = findViewById(R.id.address);
+        stateView = findViewById(R.id.state);
+        zipView = findViewById(R.id.zip_code);
+        phoneView = findViewById(R.id.phone);
+        birthDateView = findViewById(R.id.birth_date);
+
+        String email = emailView.getText().toString();
+        String password = passwordNewView.getText().toString();
+        String password2 = passwordConfirmView.getText().toString();
+        String name = nameView.getText().toString();
+        String address = addressView.getText().toString();
+        String state = stateView.getText().toString();
+        String zip = zipView.getText().toString();
+        String phone = phoneView.getText().toString();
+        String birthDate = birthDateView.getText().toString();
+
+
+        DatabaseReference fb = mDatabase.getReference("user");
+
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+            passwordNewView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
-
+        if (!password.equals(password2)){
+            passwordConfirmView.setError("The passwords do not match");
+        }
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+       if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
@@ -245,8 +297,46 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
+
+            /* show toast on successfull login -- possibly inccorect spot or interrupted */
+            Context context = getApplicationContext();
+            CharSequence text = "Logged In Successfully";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
             mAuthTask.execute((Void) null);
         }
+    }
+    /********************************
+     *   Register Tutor Account     *
+     ********************************/
+    public void attemptRegTutor() {
+        if (mAuthTask != null) {
+            return;
+        }
+
+        emailView= findViewById(R.id.new_email);
+        passwordNewView = findViewById(R.id.new_password);
+        passwordConfirmView = findViewById(R.id.confirm_password);
+        nameView = findViewById(R.id.full_name);
+        addressView = findViewById(R.id.address);
+        stateView = findViewById(R.id.state);
+        zipView = findViewById(R.id.zip_code);
+        phoneView = findViewById(R.id.phone);
+
+        String email = emailView.getText().toString();
+        String password = passwordNewView.getText().toString();
+        String password2 = passwordConfirmView.getText().toString();
+        String name = nameView.getText().toString();
+        String address = addressView.getText().toString();
+        String state = stateView.getText().toString();
+        String zip = zipView.getText().toString();
+        String phone = phoneView.getText().toString();
+
+
+
+
     }
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
@@ -254,7 +344,8 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
+        if (!password.contains("1234567890"))
+            return false;
         return password.length() > 4;
     }
 
@@ -341,8 +432,23 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         ViewAnimator vf = findViewById(R.id.viewFlipper);
         vf.showNext();
     }
+    /* displays UI for registering as a tutor */
+    public void register_tutor(View view) {
 
+        Spinner spinner = findViewById(R.id.spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.categories, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
 
+        /* switch view to tutor registration view in login xml */
+        ViewAnimator vf = findViewById(R.id.viewFlipper);
+        vf.showNext();
+        vf.showNext();
+    }
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,

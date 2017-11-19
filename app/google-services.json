@@ -46,6 +46,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "205159255020-d9if16hkeq5skbd6khm6vuto4isspu81.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "project.cse3310",
+            "certificate_hash": "b87d0d4beae721a3741f8feb9ab605dc204f63ec"
+          }
+        },
+        {
           "client_id": "205159255020-p778qvpr8rpcq20qivha82rv1h48fjq1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

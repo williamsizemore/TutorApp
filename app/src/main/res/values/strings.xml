@@ -15,12 +15,12 @@
         completions."
     </string>
 
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="login">Login</string>
+    <string name="search">Search</string>
 
     <!-- Strings related to register -->
     <string name="register" >Register</string>
@@ -29,6 +29,7 @@
     <string name="new_email">Enter an email</string>
     <string name="zip_code">Enter a zip code</string>
     <string name="register_text"><u>Not a member? Register here!</u></string>
+    <string name="register_tutor"><u>Want to register as a tutor? Click here!</u></string>
     <string name="first_name">First name</string>
     <string name="full_name">Full name (First Last)</string>
     <string name="last_name">Last name</string>
@@ -36,4 +37,13 @@
     <string name="state">State (optional)</string>
     <string name="phone">Phone number (optional)</string>
     <string name="birth_date">Date of birth</string>
+
+    <!-- array used for drop down menu in tutor reg -->
+    <string-array name="categories">
+        <item>Programming</item>
+        <item>Math</item>
+        <item>Science</item>
+        <item>Social Studies</item>
+        <item>English</item>
+    </string-array>
 </resources>
