@@ -95,16 +95,6 @@
                     android:text="@string/register_text"
                     android:textColor="@color/colorPrimary" />
 
-                <TextView
-                    android:id="@+id/register_tutor"
-                    android:layout_width="match_parent"
-                    android:layout_height="29dp"
-                    android:gravity="center"
-
-                    android:layout_marginTop="80pt"
-                    android:onClick="register_tutor"
-                    android:text="@string/register_tutor"
-                    android:textColor="@color/colorPrimary" />
             </LinearLayout>
 
 
@@ -131,9 +121,33 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <!-- user name -->
-            <!-- not complete -->
 
+            <!-- label for radio buttons -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+
+                android:text="@string/select_user_type"/>
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="40dp"
+                    android:id="@+id/userRadioButton"
+                    android:text="@string/student_type"/>
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/tutorRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/tutor_type" />
+            </RadioGroup>
             <!-- new email -->
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -201,6 +215,18 @@
                     android:maxLines="1"
                     android:singleLine="true" />
             </android.support.design.widget.TextInputLayout>
+            <!-- category of tutoring -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Category of Tutoring"
+                android:layout_marginTop="8dp"/>
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                />
             <!-- address -->
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -281,118 +307,18 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/register"
                 android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/cancel"
+                android:onClick="cancelReg"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:textSize="18dp"/>
 
 
         </LinearLayout>
         </ScrollView>
-    </LinearLayout>
-    <!-- register TUTOR layout -->
-    <LinearLayout         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="project.cse3310.LoginAndReg">
-
-        <!-- new email -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <AutoCompleteTextView
-                android:id="@+id/new_email_tutor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/new_email"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:singleLine="true" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <!-- new password -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/new_password_tutor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/new_password"
-                android:imeActionId="6"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:singleLine="true" />
-        </android.support.design.widget.TextInputLayout>
-        <!-- confirm password -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/confirm_password_tutor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/confirm_password"
-                android:imeActionId="6"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:singleLine="true" />
-        </android.support.design.widget.TextInputLayout>
-        <!-- full name -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/full_name_tutor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/full_name"
-                android:imeActionId="6"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionUnspecified"
-                android:inputType="text"
-                android:maxLength="25"
-                android:maxLines="1"
-                android:singleLine="true" />
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-
-        </android.support.design.widget.TextInputLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Category of Tutoring"
-            android:layout_marginTop="8dp"/>
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-
-            />
-        <Button
-            android:id="@+id/register_tutor_account"
-            style="?android:textAppearanceSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/register"
-            android:textStyle="bold"/>
     </LinearLayout>
 
 </ViewAnimator>

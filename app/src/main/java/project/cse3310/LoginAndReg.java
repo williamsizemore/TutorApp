@@ -51,27 +51,8 @@ import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-/**
- * A login screen that offers login via email/password.
- */
 public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private static final String TAG = "CustomAuthActivity";
@@ -100,11 +81,10 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //setContentView(R.layout.register_tutor);
 
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
-        populateAutoComplete();
+
 
         /* underline register textView */
         TextView tv = findViewById(R.id.register_text);
@@ -168,47 +148,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
             }
         });
     }
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -242,10 +181,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
      *   Register User Account      *
      ********************************/
     private void attemptReg() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -271,7 +206,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         String birthDate = birthDateView.getText().toString();
 
         DatabaseReference fb = mDatabase.getReference("user");
-
 
         boolean cancel = false;
         View focusView = null;
@@ -301,10 +235,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            //showProgress(true);
-            //mAuthTask = new UserLoginTask(email, password);
             showRegDialog();
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginAndReg.this, new OnCompleteListener<AuthResult>(){
@@ -332,6 +262,23 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
            // mAuthTask.execute((Void) null);
         }
     }
+    /* textView click to register */
+    public void register(View view) {
+        // fill spinner with categories
+        Spinner spinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.categories, android.R.layout.simple_spinner_item);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        ViewAnimator vf = findViewById(R.id.viewFlipper);
+        vf.showNext();
+    }
+    public void cancelReg(View view) {
+        ViewAnimator va = findViewById(R.id.viewFlipper);
+        va.showPrevious();
+    }
     public static boolean hasText(TextInputLayout inputLayout) {
         return !inputLayout.getEditText().getText().toString().trim().equals("");
     }
@@ -355,36 +302,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         progressDialog.setMessage("Register a new account...");
         progressDialog.show();
     }
-    /********************************
-     *   Register Tutor Account     *
-     ********************************/
-    public void attemptRegTutor() {
-        if (mAuthTask != null) {
-            return;
-        }
 
-        emailView= findViewById(R.id.new_email);
-        passwordNewView = findViewById(R.id.new_password);
-        passwordConfirmView = findViewById(R.id.confirm_password);
-        nameView = findViewById(R.id.full_name);
-        addressView = findViewById(R.id.address);
-        stateView = findViewById(R.id.state);
-        zipView = findViewById(R.id.zip_code);
-        phoneView = findViewById(R.id.phone);
-
-        String email = emailView.getText().toString();
-        String password = passwordNewView.getText().toString();
-        String password2 = passwordConfirmView.getText().toString();
-        String name = nameView.getText().toString();
-        String address = addressView.getText().toString();
-        String state = stateView.getText().toString();
-        String zip = zipView.getText().toString();
-        String phone = phoneView.getText().toString();
-
-
-
-
-    }
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
@@ -474,28 +392,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
 
         mEmailView.setAdapter(adapter);
     }
-    /* textView click to register */
-    public void register(View view) {
-        ViewAnimator vf = findViewById(R.id.viewFlipper);
-        vf.showNext();
-    }
-    /* displays UI for registering as a tutor */
-    public void register_tutor(View view) {
 
-        Spinner spinner = findViewById(R.id.spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.categories, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-
-        /* switch view to tutor registration view in login xml */
-        ViewAnimator vf = findViewById(R.id.viewFlipper);
-        vf.showNext();
-        vf.showNext();
-    }
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -505,68 +402,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-        public void validate() {
-
-        }
-    }
-
 
 }
 
