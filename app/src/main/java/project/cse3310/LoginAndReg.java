@@ -3,11 +3,14 @@ package project.cse3310;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -21,7 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +38,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -67,6 +74,9 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     private UserLoginTask mAuthTask = null;
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
+    private static final String TAG = "CustomAuthActivity";
+    private String mCustomToken;
+    private ProgressDialog progressDialog;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -107,11 +117,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
+                return id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL;
             }
         });
         //login button listener
@@ -119,7 +125,14 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                if (mEmailView.getText().toString().isEmpty())
+                    showToast(LoginAndReg.this, "Please enter your email!");
+                else if (mPasswordView.getText().toString().isEmpty())
+                    showToast(LoginAndReg.this, "Please enter your password!");
+                else {
+                    showLoginDialog();
+                    attemptLogin();
+                }
             }
         });
         // register button listener
@@ -132,13 +145,33 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
+    }
 
+    private void startSignIn(){
+        mAuth.signInWithCustomToken(mCustomToken).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+               if (task.isSuccessful()) {
+                   Log.d(TAG, "signInWithCustomToken:success");
+                   FirebaseUser user = mAuth.getCurrentUser();
+
+               } else {
+                   Log.w(TAG, "signInWithCustomToken:failure",task.getException());
+                   Toast.makeText(LoginAndReg.this, "Authentication Failed.", Toast.LENGTH_SHORT).show();
+               }
+            }
+        });
+    }
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
         }
-
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -177,57 +210,33 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+        mEmailView = findViewById(R.id.email);
+        mPasswordView = findViewById(R.id.password);
 
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
-        // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-
-        boolean cancel = false;
-        View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
-        }
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LoginAndReg.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            showToast(LoginAndReg.this, "Login Error!");
+                            progressDialog.dismiss();
+                        }
+                        else {
+                            Intent intent = new Intent(LoginAndReg.this, Main.class);
+                            startActivity(intent);
+                            progressDialog.dismiss();
+                            finish();
+                        }
+                    }
+                });
     }
     /********************************
      *   Register User Account      *
@@ -260,7 +269,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         String zip = zipView.getText().toString();
         String phone = phoneView.getText().toString();
         String birthDate = birthDateView.getText().toString();
-
 
         DatabaseReference fb = mDatabase.getReference("user");
 
@@ -295,8 +303,24 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            //showProgress(true);
+            //mAuthTask = new UserLoginTask(email, password);
+            showRegDialog();
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(LoginAndReg.this, new OnCompleteListener<AuthResult>(){
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (!task.isSuccessful()) {
+                        progressDialog.dismiss();
+                        showToast(LoginAndReg.this, "Register failed!");
+                    } else {
+                        showToast(LoginAndReg.this, "Register successful!");
+                        startActivity(new Intent(LoginAndReg.this,LoginAndReg.class));
+                        progressDialog.dismiss();
+                        finish();
+                    }
+                }
+            });
 
             /* show toast on successfull login -- possibly inccorect spot or interrupted */
             Context context = getApplicationContext();
@@ -305,8 +329,31 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
 
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
-            mAuthTask.execute((Void) null);
+           // mAuthTask.execute((Void) null);
         }
+    }
+    public static boolean hasText(TextInputLayout inputLayout) {
+        return !inputLayout.getEditText().getText().toString().trim().equals("");
+    }
+
+    public static String getText(TextInputLayout inputLayout) {
+        return inputLayout.getEditText().getText().toString().trim();
+    }
+
+    public static void showToast(Context context, String msg) {
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    }
+    private void showLoginDialog(){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Sign in");
+        progressDialog.setMessage("Verifying login...");
+        progressDialog.show();
+    }
+    private void showRegDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Register");
+        progressDialog.setMessage("Register a new account...");
+        progressDialog.show();
     }
     /********************************
      *   Register Tutor Account     *
@@ -344,8 +391,8 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     }
 
     private boolean isPasswordValid(String password) {
-        if (!password.contains("1234567890"))
-            return false;
+       // if (!password.contains("1234567890"))
+       //     return false;
         return password.length() > 4;
     }
 
