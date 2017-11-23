@@ -24,7 +24,6 @@
             android:label="@string/title_activity_login"
             android:parentActivityName=".Main" />
         <activity android:name=".TutorAddSession" />
-        <activity android:name=".CategoriesViewer"></activity>
     </application>
 
 </manifest>

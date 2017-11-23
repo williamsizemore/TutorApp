@@ -71,6 +71,7 @@ public class TutorAddSession extends AppCompatActivity {
             public void onClick(View view) {
                 TutoringSession session = new TutoringSession(mCategory.getSelectedItem().toString(),date);
                 mDatabase.child("users").child(currentuser.getUid()).child("sessions").push().setValue(session);
+                mDatabase.child("sessions").push().setValue(session);
             }
         });
     }
