@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -28,14 +30,22 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 import android.widget.ViewAnimator;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,11 +58,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private static final String TAG = "CustomAuthActivity";
@@ -71,7 +81,20 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     private EditText zipView;
     private EditText phoneView;
     private EditText birthDateView;
-
+    private RadioGroup userTypeview;
+    private Spinner categoryView;
+    private RadioButton studentTypeView;
+    private RadioButton tutorTypeView;
+    private ToggleButton sunday;
+    private ToggleButton monday;
+    private ToggleButton tuesday;
+    private ToggleButton wednesday;
+    private ToggleButton thursday;
+    private ToggleButton friday;
+    private ToggleButton saturday;
+    private EditText startHoursView;
+    private EditText stopHoursView;
+    private Switch optionalSwitchView;
     private View mProgressView;
     private View mLoginFormView;
     private View regFormView;
@@ -81,10 +104,30 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        // Set up the login form.
+        emailView= findViewById(R.id.new_email);
+        passwordNewView = findViewById(R.id.new_password);
+        passwordConfirmView = findViewById(R.id.confirm_password);
+        nameView = findViewById(R.id.full_name);
+        addressView = findViewById(R.id.address);
+        stateView = findViewById(R.id.state);
+        zipView = findViewById(R.id.zip_code);
+        phoneView = findViewById(R.id.phone);
+        birthDateView = findViewById(R.id.birth_date);
+        userTypeview = findViewById(R.id.userTypeGroup);
+        categoryView = findViewById(R.id.categorySpinner);
+        studentTypeView = findViewById(R.id.userRadioButton);
+        tutorTypeView = findViewById(R.id.tutorRadioButton);
+        sunday = findViewById(R.id.sunday);
+        monday = findViewById(R.id.monday);
+        tuesday = findViewById(R.id.tuesday);
+        wednesday = findViewById(R.id.wednesday);
+        thursday = findViewById(R.id.thursday);
+        friday = findViewById(R.id.friday);
+        saturday = findViewById(R.id.saturday);
+        startHoursView = findViewById(R.id.time_start);
+        stopHoursView = findViewById(R.id.time_stop);
+        optionalSwitchView = findViewById(R.id.optional_switch);
         mEmailView = findViewById(R.id.email);
-
 
         /* underline register textView */
         TextView tv = findViewById(R.id.register_text);
@@ -100,15 +143,37 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                 return id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL;
             }
         });
+
+        /* setup listener for radio buttons in register */
+        studentTypeView = findViewById(R.id.userRadioButton);
+        tutorTypeView = findViewById(R.id.tutorRadioButton);
+        studentTypeView.setChecked(true);
+        userTypeview = findViewById(R.id.userTypeGroup);
+
+        userTypeview.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId){
+                if (checkedId == tutorTypeView.getId()){
+                    showTutorFields(true);
+                }
+                else {
+                    showTutorFields(false);
+                }
+            }
+        } );
         //login button listener
         Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mEmailView.getText().toString().isEmpty())
+                if (mEmailView.getText().toString().isEmpty()){
+                    mEmailView.setError("Email Required");
                     showToast(LoginAndReg.this, "Please enter your email!");
-                else if (mPasswordView.getText().toString().isEmpty())
+                }
+                else if (mPasswordView.getText().toString().isEmpty()) {
+                    mPasswordView.setError("Password Required");
                     showToast(LoginAndReg.this, "Please enter your password!");
+                }
                 else {
                     showLoginDialog();
                     attemptLogin();
@@ -177,95 +242,349 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                     }
                 });
     }
+    private void attemptLogin(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LoginAndReg.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            showToast(LoginAndReg.this, "Login Error!");
+                            progressDialog.dismiss();
+                        }
+                        else {
+                            Intent intent = new Intent(LoginAndReg.this, Main.class);
+                            startActivity(intent);
+                            progressDialog.dismiss();
+                            finish();
+                        }
+                    }
+                });
+    }
     /********************************
      *   Register User Account      *
      ********************************/
     private void attemptReg() {
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
 
-        emailView= findViewById(R.id.new_email);
-        passwordNewView = findViewById(R.id.new_password);
-        passwordConfirmView = findViewById(R.id.confirm_password);
-        nameView = findViewById(R.id.full_name);
-        addressView = findViewById(R.id.address);
-        stateView = findViewById(R.id.state);
-        zipView = findViewById(R.id.zip_code);
-        phoneView = findViewById(R.id.phone);
-        birthDateView = findViewById(R.id.birth_date);
+        final String emailRegex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        final String phoneRegex = "\\d{3}-\\d{3}-\\d{4}";
+        final String email = emailView.getText().toString();
+        final String password = passwordNewView.getText().toString();
+        final String password2 = passwordConfirmView.getText().toString();
+        final String name = nameView.getText().toString();
+        final String address = addressView.getText().toString();
+        final String state = stateView.getText().toString();
+        final String zip = zipView.getText().toString();
+        final String phone = phoneView.getText().toString();
+        final String birthDate = birthDateView.getText().toString();
+        final String category = categoryView.getSelectedItem().toString();
+        String days = "";
+        String hours = "";
+        String startHours = "" + startHoursView.getText().toString();
+        String stopHours = "" + stopHoursView.getText().toString();
 
-        String email = emailView.getText().toString();
-        String password = passwordNewView.getText().toString();
-        String password2 = passwordConfirmView.getText().toString();
-        String name = nameView.getText().toString();
-        String address = addressView.getText().toString();
-        String state = stateView.getText().toString();
-        String zip = zipView.getText().toString();
-        String phone = phoneView.getText().toString();
-        String birthDate = birthDateView.getText().toString();
+        if (sunday.isChecked())
+            days += "Sun";
+        if (monday.isChecked())
+            days += "Mon";
+        if (tuesday.isChecked())
+            days += "Tues";
+        if (wednesday.isChecked())
+            days += "Wed";
+        if (thursday.isChecked())
+            days += "Thur";
+        if (friday.isChecked())
+            days += "Fri";
+        if (saturday.isChecked())
+            days += "Sat";
+        hours += startHours + "-" + stopHours;
 
-        DatabaseReference fb = mDatabase.getReference("user");
+        emailView.setError(null);
+        passwordNewView.setError(null);
+        passwordConfirmView.setError(null);
+        tutorTypeView.setError(null);
+        nameView.setError(null);
+        phoneView.setError(null);
+        addressView.setError(null);
+        stateView.setError(null);
+        startHoursView.setError(null);
+        stopHoursView.setError(null);
+
+        String userType1 = "";
+        if (studentTypeView.isChecked())
+            userType1 = studentTypeView.getText().toString();
+        else if (tutorTypeView.isChecked())
+            userType1 = tutorTypeView.getText().toString();
+        final String userType =userType1;
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            passwordNewView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-        if (!password.equals(password2)){
-            passwordConfirmView.setError("The passwords do not match");
-        }
         // Check for a valid email address.
-       if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(email)) {
+            emailView.setError(getString(R.string.error_field_required));
+            focusView = emailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!isEmailValid(emailRegex,email)) {
+            emailView.setError(getString(R.string.error_invalid_email));
+            focusView = emailView;
             cancel = true;
+        }
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            passwordNewView.setError(getString(R.string.error_invalid_password));
+            focusView = passwordNewView;
+            cancel = true;
+        }
+        //Confirm password matches in both fields
+        if (!password.isEmpty() && !password.equals("") &&!password.equals(password2)){
+            passwordConfirmView.setError("The passwords do not match");
+            focusView = passwordConfirmView;
+            cancel = true;
+        }
+
+        /* name validation */
+        if (name.equals("")){
+            showToast(this,"Please Enter your name");
+            nameView.setError("First Last");
+            focusView = nameView;
+            cancel = true;
+        }
+        /* birthdate validation */
+        if (birthDate.isEmpty() || birthDate.equals("")){
+            showToast(this, "Please enter your date of birth");
+            birthDateView.setError("MM-DD-YYYY format");
+            focusView = birthDateView;
+            cancel = true;
+        }
+        /* zip code validation */
+        if (zip.isEmpty() || zip.equals("")) {
+            showToast(this, "Please enter zip code");
+            zipView.setError("Required");
+            focusView = zipView;
+            cancel = true;
+        }
+        //Get available days and Error is none selected
+        if (tutorTypeView.isChecked()){
+            if (days.isEmpty() || days.equals("")){
+                showToast(this, "Please select available days");
+                cancel = true;
+            }
+            if (startHours.equals("")){
+                showToast(this, "Please enter start time");
+                startHoursView.setError("Required: ##:##");
+                focusView = startHoursView;
+                cancel = true;
+            }
+            if (stopHours.equals("")) {
+                showToast(this, "Please enter stop time");
+                stopHoursView.setError("Required: ##:##");
+                focusView = stopHoursView;
+                cancel = true;
+            }
+            if (phone.isEmpty() || phone.equals("")){
+                showToast(this, "Please enter your phone number");
+                phoneView.setError("###-###-####");
+                focusView = phoneView;
+                cancel = true;
+            }
+            else if (isPhoneValid(phoneRegex, phone)){
+                showToast(this, "Please enter valid phone number");
+                phoneView.setError("###-###-####");
+                focusView = phoneView;
+                cancel = true;
+            }
+            if (address.isEmpty() || address.equals("")){
+                showToast(this, "Please enter your address");
+                addressView.setError("Required");
+                focusView = addressView;
+                cancel = true;
+            }
+            if (state.isEmpty() || state.equals("")){
+                showToast(this, "Please enter your state");
+                stateView.setError("Required");
+                focusView = addressView;
+                cancel = true;
+            }
+        }
+        if (optionalSwitchView.isChecked()){
+            if (phone.isEmpty() || phone.equals("")){
+                showToast(this, "Please enter your phone number");
+                phoneView.setError("###-###-####");
+                focusView = phoneView;
+                cancel = true;
+            }
+            else if (isPhoneValid(phoneRegex, phone)){
+                showToast(this, "Please enter valid phone number");
+                phoneView.setError("###-###-####");
+                focusView = phoneView;
+                cancel = true;
+            }
+            if (address.isEmpty() || address.equals("")){
+                showToast(this, "Please enter your address");
+                addressView.setError("Required");
+                focusView = addressView;
+                cancel = true;
+            }
+            if (state.isEmpty() || state.equals("")){
+                showToast(this, "Please enter your state");
+                stateView.setError("Required");
+                focusView = addressView;
+                cancel = true;
+            }
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
+            //focus field with error
+            if (focusView != null)
+                focusView.requestFocus();
         } else {
             showRegDialog();
             mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(LoginAndReg.this, new OnCompleteListener<AuthResult>(){
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (!task.isSuccessful()) {
-                        progressDialog.dismiss();
-                        showToast(LoginAndReg.this, "Register failed!");
-                    } else {
-                        showToast(LoginAndReg.this, "Register successful!");
-                        startActivity(new Intent(LoginAndReg.this,LoginAndReg.class));
-                        progressDialog.dismiss();
-                        finish();
-                    }
-                }
-            });
+                    .addOnCompleteListener(LoginAndReg.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()) {
+                                progressDialog.dismiss();
+                                showToast(LoginAndReg.this, "Register failed!");
+                            } else {
+                                showToast(LoginAndReg.this, "Register successful!");
+                                startActivity(new Intent(LoginAndReg.this,LoginAndReg.class));
+                                progressDialog.dismiss();
+                                finish();
+                                setUserData();
+                            }
+                        }
+                    });
+        }
+    }
+    private void setUserData(){
+        final String emailRegex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        final String phoneRegex = "\\d{3}-\\d{3}-\\d{4}";
+        final String email = emailView.getText().toString();
+        final String password = passwordNewView.getText().toString();
+        final String password2 = passwordConfirmView.getText().toString();
+        final String name = nameView.getText().toString();
+        final String address = addressView.getText().toString();
+        final String state = stateView.getText().toString();
+        final String zip = zipView.getText().toString();
+        final String phone = phoneView.getText().toString();
+        final String birthDate = birthDateView.getText().toString();
+        final String category = categoryView.getSelectedItem().toString();
+        String days = "";
+        String hours = "";
+        String startHours = "" + startHoursView.getText().toString();
+        String stopHours = "" + stopHoursView.getText().toString();
 
-            /* show toast on successfull login -- possibly inccorect spot or interrupted */
-            Context context = getApplicationContext();
-            CharSequence text = "Logged In Successfully";
-            int duration = Toast.LENGTH_SHORT;
+        if (sunday.isChecked())
+            days += "Sun";
+        if (monday.isChecked())
+            days += "Mon";
+        if (tuesday.isChecked())
+            days += "Tues";
+        if (wednesday.isChecked())
+            days += "Wed";
+        if (thursday.isChecked())
+            days += "Thur";
+        if (friday.isChecked())
+            days += "Fri";
+        if (saturday.isChecked())
+            days += "Sat";
+        hours += startHours + "-" + stopHours;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-           // mAuthTask.execute((Void) null);
+        DatabaseReference fb = mDatabase.getReference();
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+        tutorTypeView.setError(null);
+        nameView.setError(null);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user1.getUid();
+        DatabaseReference fDatabase = FirebaseDatabase.getInstance().getReference();
+
+        String userType1 = "";
+        if (studentTypeView.isChecked())
+            userType1 = studentTypeView.getText().toString();
+        else if (tutorTypeView.isChecked())
+            userType1 = tutorTypeView.getText().toString();
+        final String userType =userType1;
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null)
+            Log.d("FirebaseInstance", "NULL USER");
+        else {
+            //TUTOR TYPE -- REQUIRES ALL FIELDS
+            if (tutorTypeView.isChecked()) {
+                UserData userData = new UserData(email, name, userType, category, zip, birthDate, address, state, phone, days, hours);
+                Log.d("userDataContents", userData.toString());
+                fDatabase.child("users").child(uid).setValue(userData);
+            }
+            //STUDENT OPTIONAL - register with optional data
+            else if (optionalSwitchView.isChecked()) {
+                UserData userData = new UserData(email, name, userType, category, zip, state, address, phone, birthDate);
+                Log.d("USerDateContents", userData.toString());
+                fDatabase.child("users").child(uid).setValue(userData);
+            } else {
+                UserData userData = new UserData(email, name, userType, category, zip, birthDate);
+                Log.d("USerDateContents", userData.toString());
+                fDatabase.child("users").child(uid).setValue(userData);
+            }
+        }
+    }
+    /* shows or hides the tutor specific fields */
+    private void showTutorFields(Boolean show){
+        TextView tutorDayLabel = findViewById(R.id.tutorDayLabel);
+        LinearLayout weekLayout = findViewById(R.id.weekLayout);
+        ConstraintLayout timeLayout = findViewById(R.id.tutorTimeLayout);
+        Switch optionalSwitch = findViewById(R.id.optional_switch);
+        TextView optionalLabel = findViewById(R.id.optional_label);
+        phoneView = findViewById(R.id.phone);
+        stateView = findViewById(R.id.state);
+        addressView = findViewById(R.id.address);
+        if (show){
+            tutorDayLabel.setVisibility(View.VISIBLE);
+            weekLayout.setVisibility(View.VISIBLE);
+            timeLayout.setVisibility(View.VISIBLE);
+
+            //optional fields required for tutors
+            phoneView.setVisibility(View.VISIBLE);
+            stateView.setVisibility(View.VISIBLE);
+            addressView.setVisibility(View.VISIBLE);
+            optionalLabel.setVisibility(View.GONE);
+            optionalSwitch.setVisibility(View.GONE);
+        }
+        else {
+            tutorDayLabel.setVisibility(View.GONE);
+            weekLayout.setVisibility(View.GONE);
+            timeLayout.setVisibility(View.GONE);
+            phoneView.setVisibility(View.GONE);
+            stateView.setVisibility(View.GONE);
+            addressView.setVisibility(View.GONE);
+            optionalLabel.setVisibility(View.VISIBLE);
+            optionalSwitch.setVisibility(View.VISIBLE);
+        }
+    }
+    public void optionalSwitch(View view) {
+        Switch optionalSwitch = findViewById(R.id.optional_switch);
+        phoneView = findViewById(R.id.phone);
+        stateView = findViewById(R.id.state);
+        addressView = findViewById(R.id.address);
+
+        if (optionalSwitch.isChecked()) {
+            phoneView.setVisibility(View.VISIBLE);
+            stateView.setVisibility(View.VISIBLE);
+            addressView.setVisibility(View.VISIBLE);
+        }
+        else {
+            phoneView.setVisibility(View.GONE);
+            stateView.setVisibility(View.GONE);
+            addressView.setVisibility(View.GONE);
         }
     }
     /* textView click to register */
-    public void register(View view) {
+    public void registerTextClick(View view) {
         // fill spinner with categories
-        Spinner spinner = findViewById(R.id.spinner);
+        Spinner spinner = findViewById(R.id.categorySpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.categories, android.R.layout.simple_spinner_item);
 
@@ -278,13 +597,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     public void cancelReg(View view) {
         ViewAnimator va = findViewById(R.id.viewFlipper);
         va.showPrevious();
-    }
-    public static boolean hasText(TextInputLayout inputLayout) {
-        return !inputLayout.getEditText().getText().toString().trim().equals("");
-    }
-
-    public static String getText(TextInputLayout inputLayout) {
-        return inputLayout.getEditText().getText().toString().trim();
     }
 
     public static void showToast(Context context, String msg) {
@@ -299,21 +611,27 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     private void showRegDialog() {
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Register");
-        progressDialog.setMessage("Register a new account...");
+        progressDialog.setMessage("Registering new account...");
         progressDialog.show();
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isEmailValid(String regex,String email) {
         //TODO: Replace this with your own logic
+        if (!Pattern.matches(regex, email))
+            return false;
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-       // if (!password.contains("1234567890"))
+        //if (!password.contains("1234567890"))
        //     return false;
+        if (password.isEmpty())
+            return false;
         return password.length() > 4;
     }
-
+    private boolean isPhoneValid(String regex,String phone) {
+        return Pattern.matches(regex, phone);
+    }
     /**
      * Shows the progress UI and hides the login form.
      */

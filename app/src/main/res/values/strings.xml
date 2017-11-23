@@ -23,7 +23,7 @@
     <string name="search">Search</string>
 
     <!-- Strings related to register -->
-    <string name="register">Register</string>
+    <string name="register" >Register</string>
     <string name="new_password">Enter a password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="new_email">Enter an email</string>
@@ -33,10 +33,10 @@
     <string name="first_name">First name</string>
     <string name="full_name">Full name (First Last)</string>
     <string name="last_name">Last name</string>
-    <string name="address">Address (optional)</string>
-    <string name="state">State (optional)</string>
-    <string name="phone">Phone number (optional)</string>
-    <string name="birth_date">Date of birth</string>
+    <string name="address">Address</string>
+    <string name="state">State</string>
+    <string name="phone">Phone number</string>
+    <string name="birth_date">Date of birth (mm-dd-yyyy)</string>
     <string name="cancel"><u>Cancel</u></string>
     <string name="student_type">Student</string>
     <string name="tutor_type">Tutor</string>
@@ -46,6 +46,7 @@
     <string name="select_date">Select Date</string>
     <string name="setup_tutoring_session">Setup Tutoring Session</string>
     <string name="submit">Submit</string>
+    <string name="optional">Optional Information</string>
 
     <!-- array used for drop down menu in tutor reg -->
     <string-array name="categories">
