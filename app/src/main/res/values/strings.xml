@@ -23,7 +23,7 @@
     <string name="search">Search</string>
 
     <!-- Strings related to register -->
-    <string name="register" >Register</string>
+    <string name="register">Register</string>
     <string name="new_password">Enter a password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="new_email">Enter an email</string>
@@ -56,4 +56,11 @@
         <item>Social Studies</item>
         <item>English</item>
     </string-array>
+
+    <!--Strings for Communications -->
+    <string name="Button_Email">E-mail</string>
+    <string name="Button_Phone">Phone</string>
+    <string name="Button_SmS">Text</string>
+
+
 </resources>
