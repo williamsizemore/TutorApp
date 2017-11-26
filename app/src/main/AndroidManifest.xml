@@ -28,6 +28,18 @@
             android:parentActivityName=".Main" />
         <activity android:name=".TutorAddSession" />
         <activity android:name=".Communications"></activity>
+
+        <activity
+            android:name=".Search"
+            android:label="Search"
+            android:launchMode="singleTop"
+            android:parentActivityName=".Main">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+            <meta-data android:name = "android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
     </application>
 
 </manifest>

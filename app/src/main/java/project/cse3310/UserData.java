@@ -1,12 +1,12 @@
 package project.cse3310;
 
-/**
- * Created by William-PC on 11/22/2017.
- */
-
 public class UserData {
 
-    public String email, name, userType, category, zip, state, address, phone, dateOfBirth, days, hours;
+    private String email, name, userType, category, zip, state, address, phone, dateOfBirth, days, hours;
+    public UserData (){
+
+    }
+
     /* student user - only required fields */
     UserData (String email, String name, String userType, String category, String zip, String dateOfBirth){
         this.email = email;
@@ -98,6 +98,18 @@ public class UserData {
     }
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+    public String getDays() {
+        return days;
+    }
+    public void setDays(String days) {
+        this.days = days;
+    }
+    public String getHours() {
+        return hours;
+    }
+    public void setHours(String hours) {
+        this.hours = hours;
     }
 
     @Override

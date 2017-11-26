@@ -25,9 +25,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -72,6 +74,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
 
+    private int attemptLoginCount;
     private EditText emailView;
     private EditText passwordNewView;
     private EditText passwordConfirmView;
@@ -128,7 +131,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         stopHoursView = findViewById(R.id.time_stop);
         optionalSwitchView = findViewById(R.id.optional_switch);
         mEmailView = findViewById(R.id.email);
-
+        attemptLoginCount = 0;
         /* underline register textView */
         TextView tv = findViewById(R.id.register_text);
         tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -197,23 +200,16 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
     }
-
-    private void startSignIn(){
-        mAuth.signInWithCustomToken(mCustomToken).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-               if (task.isSuccessful()) {
-                   Log.d(TAG, "signInWithCustomToken:success");
-                   FirebaseUser user = mAuth.getCurrentUser();
-
-               } else {
-                   Log.w(TAG, "signInWithCustomToken:failure",task.getException());
-                   Toast.makeText(LoginAndReg.this, "Authentication Failed.", Toast.LENGTH_SHORT).show();
-               }
-            }
-        });
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        onBackPressed();
+        return super.onOptionsItemSelected(item);
     }
-
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        LoginAndReg.this.overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -231,6 +227,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
                             showToast(LoginAndReg.this, "Login Error!");
+                            invalidLoginHandler();
                             progressDialog.dismiss();
                         }
                         else {
@@ -260,6 +257,15 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                     }
                 });
     }
+    private void invalidLoginHandler(){
+        attemptLoginCount += 1;
+        if (attemptLoginCount >= 5)
+        {
+            showToast(this, "Too many attempts to login");
+            mEmailView.setError("Too many failed attempts!");
+        }
+    }
+
     /********************************
      *   Register User Account      *
      ********************************/
@@ -388,7 +394,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                 focusView = phoneView;
                 cancel = true;
             }
-            else if (isPhoneValid(phoneRegex, phone)){
+            else if (!isPhoneValid(phone)){
                 showToast(this, "Please enter valid phone number");
                 phoneView.setError("###-###-####");
                 focusView = phoneView;
@@ -414,7 +420,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                 focusView = phoneView;
                 cancel = true;
             }
-            else if (isPhoneValid(phoneRegex, phone)){
+            else if (!isPhoneValid(phone)){
                 showToast(this, "Please enter valid phone number");
                 phoneView.setError("###-###-####");
                 focusView = phoneView;
@@ -448,7 +454,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                                 progressDialog.dismiss();
                                 showToast(LoginAndReg.this, "Register failed!");
                             } else {
-                                showToast(LoginAndReg.this, "Register successful!");
+                                showToast(LoginAndReg.this, "Registration successful!");
                                 startActivity(new Intent(LoginAndReg.this,LoginAndReg.class));
                                 progressDialog.dismiss();
                                 finish();
@@ -460,7 +466,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     }
     private void setUserData(){
         final String emailRegex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        final String phoneRegex = "\\d{3}-\\d{3}-\\d{4}";
+        final String phoneRegex = "\\d{3}-\\d{3}";
         final String email = emailView.getText().toString();
         final String password = passwordNewView.getText().toString();
         final String password2 = passwordConfirmView.getText().toString();
@@ -517,7 +523,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
             if (tutorTypeView.isChecked()) {
                 UserData userData = new UserData(email, name, userType, category, zip, birthDate, address, state, phone, days, hours);
                 Log.d("userDataContents", userData.toString());
-                fDatabase.child("users").child(uid).setValue(userData);
+                fDatabase.child("tutors").child(uid).setValue(userData);
             }
             //STUDENT OPTIONAL - register with optional data
             else if (optionalSwitchView.isChecked()) {
@@ -629,8 +635,8 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
             return false;
         return password.length() > 4;
     }
-    private boolean isPhoneValid(String regex,String phone) {
-        return Pattern.matches(regex, phone);
+    private boolean isPhoneValid(String phone) {
+        return PhoneNumberUtils.isGlobalPhoneNumber(phone);
     }
     /**
      * Shows the progress UI and hides the login form.

@@ -1,10 +1,13 @@
 package project.cse3310;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,8 +26,11 @@ public class Main extends AppCompatActivity{
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-
         getMenuInflater().inflate(R.menu.menu_login, menu);
+
+        //SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        //SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        //searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
     }
     @Override
@@ -41,13 +47,16 @@ public class Main extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.action_login:
-                if (!userLoggedIn())
+                if (!userLoggedIn()) {
                     startActivity(new Intent(this, LoginAndReg.class));
+                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                }
                 else
                     logoutUser();
                 return true;
-            case R.id.action_search:
-                //TODO: implement search activity start here
+            case R.id.search:
+                startActivity(new Intent(this, Search.class));
+                overridePendingTransition(R.anim.slide_in,R.anim.slide_out); //slide in and out for starting activity
                 return true;
         }
         return super.onOptionsItemSelected(item);

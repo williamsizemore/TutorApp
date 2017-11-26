@@ -83,7 +83,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/login"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:background="@drawable/custom_button"
+                    android:foreground="@drawable/ripple_effect"
+                    />
 
                 <TextView
                     android:id="@+id/register_text"
@@ -434,7 +437,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/register"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:background="@drawable/custom_button"
+                android:foreground="@drawable/ripple_effect"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

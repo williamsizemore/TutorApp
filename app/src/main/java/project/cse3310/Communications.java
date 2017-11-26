@@ -1,10 +1,19 @@
 package project.cse3310;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Communications extends AppCompatActivity {
 
@@ -60,6 +69,68 @@ public class Communications extends AppCompatActivity {
      }
      }**/
 
+
+    /*************************************
+     * TOP BAR MENU CREATION METHODS     *
+     ************************************/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        MenuItem loginItem = menu.findItem(R.id.action_login);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            loginItem.setIcon(getResources().getDrawable(R.drawable.logout_icon));
+        else
+            loginItem.setIcon(getResources().getDrawable(R.drawable.login_icon));
+        return super.onPrepareOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.action_login:
+                if (!userLoggedIn())
+                    startActivity(new Intent(this, LoginAndReg.class));
+                else
+                    logoutUser();
+                return true;
+            case R.id.search:
+                //TODO: implement search activity start here
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    /* returns whether a user is currently logged in or not */
+    private boolean userLoggedIn(){
+        FirebaseUser user;
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        return user != null;
+    }
+    private void logoutUser(){
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(Communications.this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
+        //restart activity to refresh content and UI
+        recreate();
+    }
 
 
 }
