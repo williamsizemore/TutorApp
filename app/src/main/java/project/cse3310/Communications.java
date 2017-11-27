@@ -9,14 +9,23 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Communications extends AppCompatActivity {
-
+    private UserData userData;
+    private TextView profileName;
+    private TextView profileSubject;
+    private Button phoneButton;
+    private Button emailButton;
+    private RatingBar ratingBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /**The savedInstanceState needs to have Tutor's data in this, else it won't work.
@@ -24,33 +33,41 @@ public class Communications extends AppCompatActivity {
          Need to get the data for that as well
          Right now I have my data in, I don't care at all for the presentation**/
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_communications);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null)
+            setContentView(R.layout.activity_communications);
+
+        else {
+            setContentView(R.layout.comm_not_signedin);
+        }
+        userData = getIntent().getExtras().getParcelable("User");
+        profileName = findViewById(R.id.profile_name);
+        profileSubject = findViewById(R.id.profile_subject);
+        phoneButton = findViewById(R.id.profile_phone_button);
+        emailButton = findViewById(R.id.profile_email_button);
+        ratingBar = findViewById(R.id.ratingBar);
+
+        profileName.setText(userData.getName());
+        profileSubject.setText(userData.getCategory());
+        ratingBar.setRating((float) 4.5);
     }
 
     /**It works, but actions on what to do after it is done needs to have implemented.
      Personally I'd say main menu, but if we can go back that works too.**/
     public void callTutor(View view) {
-
-        //Add method to get the phone number from Firebase
-        String numb = "817-555-555";  //Dummy so that this compliles
         Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:" + numb));
+        intent.setData(Uri.parse("tel:" + userData.getPhone()));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
     }
 
     public void emailTutor(View view) {
-
-        //Add method to get email from Firebase
-        String[] sendEmail = {"NotZacksRealEmail@gmail.com"};
         Intent email = new Intent(Intent.ACTION_SEND);
-        email.putExtra(Intent.EXTRA_EMAIL, sendEmail);
+        email.putExtra(Intent.EXTRA_EMAIL, userData.getEmail());
         email.putExtra(Intent.EXTRA_SUBJECT, "Message from Frog Tutoring");
         email.putExtra(Intent.EXTRA_TEXT, "");
         email.setType("message/rfc822");
         startActivity(Intent.createChooser(email, "Choose an Email client :"));
-
     }
 
 
@@ -75,23 +92,8 @@ public class Communications extends AppCompatActivity {
      ************************************/
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu_search, menu);
+        getMenuInflater().inflate(R.menu.menu_communications, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
         return true;
     }
     @Override
@@ -108,13 +110,12 @@ public class Communications extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.action_login:
-                if (!userLoggedIn())
+                if (!userLoggedIn()){
                     startActivity(new Intent(this, LoginAndReg.class));
+                    overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+                }
                 else
                     logoutUser();
-                return true;
-            case R.id.search:
-                //TODO: implement search activity start here
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -131,6 +132,10 @@ public class Communications extends AppCompatActivity {
         //restart activity to refresh content and UI
         recreate();
     }
-
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);    //enter and exit for going to prev
+    }
 
 }

@@ -1,6 +1,9 @@
 package project.cse3310;
 
-public class UserData {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class UserData implements Parcelable{
 
     private String email, name, userType, category, zip, state, address, phone, dateOfBirth, days, hours;
     public UserData (){
@@ -45,6 +48,33 @@ public class UserData {
         this.days = days;
         this.hours = hours;
     }
+
+    protected UserData(Parcel in) {
+        email = in.readString();
+        name = in.readString();
+        userType = in.readString();
+        category = in.readString();
+        zip = in.readString();
+        state = in.readString();
+        address = in.readString();
+        phone = in.readString();
+        dateOfBirth = in.readString();
+        days = in.readString();
+        hours = in.readString();
+    }
+
+    public static final Creator<UserData> CREATOR = new Creator<UserData>() {
+        @Override
+        public UserData createFromParcel(Parcel in) {
+            return new UserData(in);
+        }
+
+        @Override
+        public UserData[] newArray(int size) {
+            return new UserData[size];
+        }
+    };
+
     public String getEmail() {
         return email;
     }
@@ -125,5 +155,25 @@ public class UserData {
                 ", phone='" + phone + '\'' +
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(email);
+        parcel.writeString(name);
+        parcel.writeString(userType);
+        parcel.writeString(category);
+        parcel.writeString(zip);
+        parcel.writeString(state);
+        parcel.writeString(address);
+        parcel.writeString(phone);
+        parcel.writeString(dateOfBirth);
+        parcel.writeString(days);
+        parcel.writeString(hours);
     }
 }

@@ -39,37 +39,6 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_name"
         tools:text="subject" />
 
-    <Button
-        android:id="@+id/profile_phone_button"
-        android:layout_width="240dp"
-        android:layout_height="46dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/custom_button"
-        android:foreground="@drawable/ripple_effect"
-        android:onClick="callTutor"
-        android:text="@string/Button_Phone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
-
-    <Button
-        android:id="@+id/profile_email_button"
-        android:layout_width="240dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/custom_button"
-        android:foreground="@drawable/ripple_effect"
-        android:onClick="emailTutor"
-        android:text="@string/Button_Email"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_phone_button" />
-
     <RatingBar
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
@@ -77,25 +46,26 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:isIndicator="true"
         android:scaleX="0.6"
         android:scaleY="0.6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_subject" />
 
-    <!--<Button
-        android:id="@+id/button2"
-        android:layout_width="163dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="24dp"
-        android:background="@color/colorAccent"
-        android:onClick="textTutor"
-        android:text="@string/Button_SmS"
+    <TextView
+        android:id="@+id/not_signedin_text"
+        android:layout_width="288dp"
+        android:layout_height="73dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/prompt_signin"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="28sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.538"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3" /> -->
+        app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
 </android.support.constraint.ConstraintLayout>

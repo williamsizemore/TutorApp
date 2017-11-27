@@ -47,7 +47,7 @@
     <string name="setup_tutoring_session">Setup Tutoring Session</string>
     <string name="submit">Submit</string>
     <string name="optional">Optional Information</string>
-
+    <string name="prompt_signin">Sign in to see full content</string>
     <!-- array used for drop down menu in tutor reg -->
     <string-array name="categories">
         <item>Programming</item>

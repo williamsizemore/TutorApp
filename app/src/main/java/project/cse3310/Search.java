@@ -1,11 +1,11 @@
 package project.cse3310;
 
-
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +22,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -31,15 +30,13 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
     private FirebaseUser user;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-    private Query query;
     private ListView mListview;
-    private ArrayList<String> users= new ArrayList<String>();
+    private ArrayList<String> users= new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //handleIntent(getIntent());
         setContentView(R.layout.activity_search);
 
         mListview = findViewById(R.id.search_list_view);
@@ -76,7 +73,6 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
     private void handleIntent(Intent intent){
         if (Intent.ACTION_SEARCH.equals(intent.getAction())){
             String query = intent.getStringExtra(SearchManager.QUERY);
-            //search(query);
             startSearch(query);
         }
     }
@@ -148,7 +144,6 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
         FirebaseAuth.getInstance().signOut();
         Toast.makeText(Search.this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
         //restart activity to refresh content and UI
-        //startActivity(new Intent(this, Search.class));
         recreate();
     }
 
@@ -179,27 +174,34 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
             userData.setEmail(ds.getValue(UserData.class).getEmail());
             userData.setState(ds.getValue(UserData.class).getEmail());
             userData.setUserType(ds.getValue(UserData.class).getUserType());
+            userData.setDateOfBirth(ds.getValue(UserData.class).getDateOfBirth());
+            userData.setZip(ds.getValue(UserData.class).getZip());
+            userData.setPhone(ds.getValue(UserData.class).getPhone());
+            userData.setDays(ds.getValue(UserData.class).getDays());
+            userData.setHours(ds.getValue(UserData.class).getHours());
+            userData.setAddress(ds.getValue(UserData.class).getAddress());
+
             userArray.add(userData);
-            System.out.println("USERNAME::::: " + userData.getName());
         }
         for (int i =0; i < userArray.size(); i++) {
             if (userArray.get(i).getName().endsWith(value) || userArray.get(i).getName().startsWith(value) || userArray.get(i).getName().equalsIgnoreCase(value)
-                    || userArray.get(i).getCategory().equalsIgnoreCase(value)) {
-                System.out.println("USER RESULT===== " + userArray.get(i).getName());
-                resultArray.add(userArray.get(i));
+                    || userArray.get(i).getCategory().equalsIgnoreCase(value))
+            {
+                Intent profile = new Intent(this, Communications.class);
+                UserData user = userArray.get(i);
+
+                profile.putExtra("User", user);
+                startActivity(profile);
             }
-
         }
-        displayResult(resultArray);
-    }
-    public void displayResult(ArrayList<UserData> userArray){
-        ListView resultView = findViewById(R.id.search_list_view);
-
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        System.out.println("---- ITEM WAS CLICKED ----"+ adapterView.getItemAtPosition(i).toString());
-        //TODO: implement finding user == name, and going to communications page
+        Log.d("ItemClicked",("---- ITEM WAS CLICKED ----"+ adapterView.getItemAtPosition(i).toString()));
+        String[] name = adapterView.getItemAtPosition(i).toString().split("  ");
+        System.out.println(name[0]);
+        startSearch(name[0]);
     }
+
 }

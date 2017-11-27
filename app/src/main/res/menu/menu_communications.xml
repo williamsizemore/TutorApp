@@ -3,12 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="project.cse3310.Communications">
-    <item
-        android:id="@+id/search"
-        android:title="@string/search"
-        android:icon="@drawable/search_icon"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/action_login"
         android:title="@string/login"
