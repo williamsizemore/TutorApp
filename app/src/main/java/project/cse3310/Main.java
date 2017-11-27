@@ -7,6 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -23,6 +26,15 @@ public class Main extends AppCompatActivity{
 
         setContentView(R.layout.activity_main);
 
+        ListView categories = findViewById(R.id.main_categories_list);
+        categories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent category = new Intent(Main.this,Category.class);
+                    category.putExtra("Category", adapterView.getItemAtPosition(position).toString());
+                startActivity(category);
+            }
+        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
