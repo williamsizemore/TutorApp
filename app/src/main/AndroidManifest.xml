@@ -26,7 +26,6 @@
             android:name=".LoginAndReg"
             android:label="@string/title_activity_login"
             android:parentActivityName=".Main" />
-        <activity android:name=".TutorAddSession" />
         <activity android:name=".Communications"
             android:parentActivityName=".Search"/>
 
