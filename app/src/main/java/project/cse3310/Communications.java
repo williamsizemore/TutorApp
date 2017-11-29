@@ -33,10 +33,6 @@ public class Communications extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        /**The savedInstanceState needs to have Tutor's data in this, else it won't work.
-         I also have it set up so it shows the name, and subject the tutor is tutoring in.
-         Need to get the data for that as well
-         Right now I have my data in, I don't care at all for the presentation**/
         super.onCreate(savedInstanceState);
         int contentID;
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {

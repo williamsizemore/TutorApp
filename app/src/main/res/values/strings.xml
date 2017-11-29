@@ -64,4 +64,28 @@
     <string name="Button_SmS">Text</string>
 
 
+    <!-- Strings for Appointments -->
+    <string name="page_name">Appointments Menu</string>
+    <string name="Make_appointement">Your Schedule</string>
+    <string name="Look_appointments"> Schedule Appointments</string>
+    <string name="Review_Button"> Review</string>
+    <string name="Confirm_Button"> Confirm</string>
+
+    <string-array name="Days_of_the_week">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+    <string name="Time1"> 12-1pm</string>
+    <string name="Time2"> 1-2pm</string>
+    <string name="Time3"> 2-3pm</string>
+    <string name="Time4"> 3-4pm</string>
+    <string name="Time5"> 4-5pm</string>
+
+
 </resources>

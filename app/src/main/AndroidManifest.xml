@@ -26,22 +26,29 @@
             android:name=".LoginAndReg"
             android:label="@string/title_activity_login"
             android:parentActivityName=".Main" />
-        <activity android:name=".Communications"
-            android:parentActivityName=".Search"/>
-
+        <activity
+            android:name=".Communications"
+            android:parentActivityName=".Search" />
         <activity
             android:name=".Search"
             android:label="Search"
             android:launchMode="singleTop"
             android:parentActivityName=".Main">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name = "android.app.searchable"
-                android:resource="@xml/searchable"/>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".Review"></activity>
-        <activity android:name=".Category" android:parentActivityName=".Main"></activity>
+        <activity android:name=".Review" />
+        <activity
+            android:name=".Category"
+            android:parentActivityName=".Main" />
+        <activity android:name=".Appointments_Menu" />
+        <activity android:name=".viewSchedule" />
+        <activity android:name=".makeAppointment"></activity>
     </application>
 
 </manifest>
