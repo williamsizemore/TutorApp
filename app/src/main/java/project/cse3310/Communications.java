@@ -59,7 +59,7 @@ public class Communications extends AppCompatActivity {
         profileName.setText(userData.getName());
         profileSubject.setText(userData.getCategory());
         ratingBar.setRating(userData.getRating());
-        ratingNum.setText(String.valueOf(userData.getRating()));
+        ratingNum.setText(String.format("%.1f",userData.getRating()));
         if (contentID == 1) {
             times = findViewById(R.id.availTimes);
             times.setText(userData.getDays() + " - " + userData.getHours());
