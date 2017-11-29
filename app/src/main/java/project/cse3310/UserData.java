@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public class UserData implements Parcelable{
 
     private String email, name, userType, category, zip, state, address, phone, dateOfBirth, days, hours;
+    private float rating;
     public UserData (){
 
     }
@@ -35,7 +36,7 @@ public class UserData implements Parcelable{
     }
     /* tutor type user */
     UserData (String email, String name, String userType, String category, String zip,
-              String dateOfBirth, String address, String state, String phone, String days ,String hours){
+              String dateOfBirth, String address, String state, String phone, String days ,String hours, float rating){
         this.email = email;
         this.name = name;
         this.userType = userType;
@@ -47,6 +48,7 @@ public class UserData implements Parcelable{
         this.phone = phone;
         this.days = days;
         this.hours = hours;
+        this.rating = rating;
     }
 
     protected UserData(Parcel in) {
@@ -61,6 +63,7 @@ public class UserData implements Parcelable{
         dateOfBirth = in.readString();
         days = in.readString();
         hours = in.readString();
+        rating = in.readFloat();
     }
 
     public static final Creator<UserData> CREATOR = new Creator<UserData>() {
@@ -141,6 +144,12 @@ public class UserData implements Parcelable{
     public void setHours(String hours) {
         this.hours = hours;
     }
+    public float getRating() {
+        return rating;
+    }
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
 
     @Override
     public String toString() {
@@ -175,5 +184,6 @@ public class UserData implements Parcelable{
         parcel.writeString(dateOfBirth);
         parcel.writeString(days);
         parcel.writeString(hours);
+        parcel.writeFloat(rating);
     }
 }

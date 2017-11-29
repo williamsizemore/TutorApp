@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.w3c.dom.Text;
+
 public class Communications extends AppCompatActivity {
     private UserData userData;
     private TextView profileName;
@@ -26,6 +28,9 @@ public class Communications extends AppCompatActivity {
     private Button phoneButton;
     private Button emailButton;
     private RatingBar ratingBar;
+    private TextView ratingNum;
+    private TextView times;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /**The savedInstanceState needs to have Tutor's data in this, else it won't work.
@@ -33,11 +38,14 @@ public class Communications extends AppCompatActivity {
          Need to get the data for that as well
          Right now I have my data in, I don't care at all for the presentation**/
         super.onCreate(savedInstanceState);
-        if (FirebaseAuth.getInstance().getCurrentUser() != null)
+        int contentID;
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             setContentView(R.layout.activity_communications);
-
+            contentID = 1;
+        }
         else {
             setContentView(R.layout.comm_not_signedin);
+            contentID = 2;
         }
         userData = getIntent().getExtras().getParcelable("User");
         profileName = findViewById(R.id.profile_name);
@@ -45,10 +53,17 @@ public class Communications extends AppCompatActivity {
         phoneButton = findViewById(R.id.profile_phone_button);
         emailButton = findViewById(R.id.profile_email_button);
         ratingBar = findViewById(R.id.ratingBar);
+        ratingNum = findViewById(R.id.rating_number);
+
 
         profileName.setText(userData.getName());
         profileSubject.setText(userData.getCategory());
-        ratingBar.setRating((float) 4.5);
+        ratingBar.setRating(userData.getRating());
+        ratingNum.setText(String.valueOf(userData.getRating()));
+        if (contentID == 1) {
+            times = findViewById(R.id.availTimes);
+            times.setText(userData.getDays() + " - " + userData.getHours());
+        }
     }
 
     /**It works, but actions on what to do after it is done needs to have implemented.
@@ -69,7 +84,15 @@ public class Communications extends AppCompatActivity {
         email.setType("message/rfc822");
         startActivity(Intent.createChooser(email, "Choose an Email client :"));
     }
-
+    /**
+     * Send to review page for tutor, passing userData object
+     */
+    public void reviewTutor(View view){
+        Intent review = new Intent(this, Review.class);
+        review.putExtra("User",userData);
+        startActivity(review);
+        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+    }
 
     /** public void textTutor(View view)
      {
@@ -133,9 +156,10 @@ public class Communications extends AppCompatActivity {
         recreate();
     }
     @Override
-    public void onBackPressed(){
-        super.onBackPressed();
-        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);    //enter and exit for going to prev
+    public void onPause(){
+        super.onPause();
+        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
     }
+
 
 }

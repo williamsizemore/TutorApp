@@ -40,8 +40,8 @@
             <meta-data android:name = "android.app.searchable"
                 android:resource="@xml/searchable"/>
         </activity>
-
-        <activity android:name=".Category"></activity>
+        <activity android:name=".Review"></activity>
+        <activity android:name=".Category" android:parentActivityName=".Main"></activity>
     </application>
 
 </manifest>

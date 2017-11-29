@@ -44,6 +44,7 @@ public class Category extends AppCompatActivity {
                 Intent tutor = new Intent(Category.this,Communications.class);
                 tutor.putExtra("User", data.get(position));
                 startActivity(tutor);
+                overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
             }
         });
 
@@ -69,5 +70,12 @@ public class Category extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+
+        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
     }
 }

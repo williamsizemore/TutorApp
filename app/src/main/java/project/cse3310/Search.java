@@ -46,7 +46,7 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, users);
         mListview.setAdapter(arrayAdapter);
 
-        databaseReference.addChildEventListener(new ChildEventListener() {
+        databaseReference.orderByChild("tutors").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 UserData userData = dataSnapshot.getValue(UserData.class);
@@ -130,11 +130,7 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
         }
         return super.onOptionsItemSelected(item);
     }
-    @Override
-    public void onBackPressed(){
-        super.onBackPressed();
-        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);    //enter and exit for going to prev
-    }
+
     /* returns whether a user is currently logged in or not */
     private boolean userLoggedIn(){
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -163,9 +159,18 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
             }
         });
     }
+
+    /**
+     * Grabs a snapshot of the database and creates an arrayList of objects
+     * ArrayList is then searched for the value
+     * Once value is found, send to communications page, passing the object
+     * @param dataSnapshot -- grabs data at current time
+     * @param value -- value to search for
+     */
     public void search(DataSnapshot dataSnapshot, String value){
         ArrayList<UserData> userArray = new ArrayList<>();
         ArrayList<UserData> resultArray = new ArrayList<>();
+
         for (DataSnapshot ds: dataSnapshot.getChildren()){
             UserData userData = new UserData();
 
@@ -180,6 +185,7 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
             userData.setDays(ds.getValue(UserData.class).getDays());
             userData.setHours(ds.getValue(UserData.class).getHours());
             userData.setAddress(ds.getValue(UserData.class).getAddress());
+            userData.setRating(ds.getValue(UserData.class).getRating());
 
             userArray.add(userData);
         }
@@ -190,8 +196,10 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
                 Intent profile = new Intent(this, Communications.class);
                 UserData user = userArray.get(i);
 
+                // pass the object into communications
                 profile.putExtra("User", user);
                 startActivity(profile);
+                overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             }
         }
     }
@@ -203,5 +211,9 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
         System.out.println(name[0]);
         startSearch(name[0]);
     }
-
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);    //enter and exit for going to prev
+    }
 }

@@ -521,7 +521,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         else {
             //TUTOR TYPE -- REQUIRES ALL FIELDS
             if (tutorTypeView.isChecked()) {
-                UserData userData = new UserData(email, name, userType, category, zip, birthDate, address, state, phone, days, hours);
+                UserData userData = new UserData(email, name, userType, category, zip, birthDate, address, state, phone, days, hours, 0);
                 Log.d("userDataContents", userData.toString());
                 fDatabase.child("tutors").child(uid).setValue(userData);
             }

@@ -31,8 +31,9 @@ public class Main extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent category = new Intent(Main.this,Category.class);
-                    category.putExtra("Category", adapterView.getItemAtPosition(position).toString());
+                category.putExtra("Category", adapterView.getItemAtPosition(position).toString());
                 startActivity(category);
+                overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
             }
         });
     }
@@ -82,7 +83,7 @@ public class Main extends AppCompatActivity{
         FirebaseAuth.getInstance().signOut();
         Toast.makeText(Main.this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
         //restart activity to refresh content and UI
-        startActivity(new Intent(this, Main.class));
+        recreate();
     }
 
 }
