@@ -22,6 +22,7 @@ public class Category extends AppCompatActivity {
 
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private ListView tutors;
+    private ArrayList<UserData> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +35,18 @@ public class Category extends AppCompatActivity {
         tutors = findViewById(R.id.tutors_listview);
 
         final ArrayList<String> names = new ArrayList<>();
-        final ArrayList<UserData> data = new ArrayList<>();
+        data = new ArrayList<>();
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,names);
         tutors.setAdapter(arrayAdapter);
 
         tutors.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent tutor = new Intent(Category.this,Communications.class);
-                tutor.putExtra("User", data.get(position));
-                startActivity(tutor);
-                overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+                //Intent tutor = new Intent(Category.this,Communications.class);
+                //tutor.putExtra("User", data.get(position));
+                //startActivity(tutor);
+                selectTutor(data.get(position));
+                //overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
             }
         });
 
@@ -72,10 +74,24 @@ public class Category extends AppCompatActivity {
             });
     }
 
+    public void selectTutor(UserData data){
+        Intent intent = new Intent(this, Communications.class);
+        intent.putExtra("User",data);
+        startActivityForResult(intent,1);
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+    }
     @Override
     public void onPause(){
         super.onPause();
 
         overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == 1){
+            if (resultCode == RESULT_OK){
+                UserData userData = data.getExtras().getParcelable("User");
+            }
+        }
     }
 }

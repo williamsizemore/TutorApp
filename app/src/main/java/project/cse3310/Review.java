@@ -96,7 +96,7 @@ public class Review extends AppCompatActivity {
         }
         avg = sum / count;
         userData.setRating(avg);
-        //TODO ISSUES HERE CAUSING PROBLEMS IN DATABASE
+
         DatabaseReference fdb = FirebaseDatabase.getInstance().getReference("tutors");
         fdb.orderByChild("name").equalTo(userData.getName()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

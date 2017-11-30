@@ -48,7 +48,7 @@
             android:parentActivityName=".Main" />
         <activity android:name=".Appointments_Menu" />
         <activity android:name=".viewSchedule" />
-        <activity android:name=".makeAppointment"></activity>
+        <activity android:name=".makeAppointment" ></activity>
     </application>
 
 </manifest>

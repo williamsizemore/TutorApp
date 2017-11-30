@@ -198,7 +198,7 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
 
                 // pass the object into communications
                 profile.putExtra("User", user);
-                startActivity(profile);
+                startActivityForResult(profile,1);
                 overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             }
         }
@@ -215,5 +215,13 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
     public void onBackPressed(){
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);    //enter and exit for going to prev
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == 1){
+            if (resultCode == RESULT_OK){
+                UserData userData = data.getExtras().getParcelable("User");
+            }
+        }
     }
 }

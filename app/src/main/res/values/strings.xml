@@ -71,6 +71,19 @@
     <string name="Review_Button"> Review</string>
     <string name="Confirm_Button"> Confirm</string>
 
+    <string-array name="appt_hours">
+        <item>12:00pm</item>
+        <item>1:00pm</item>
+        <item>2:00pm</item>
+        <item>3:00pm</item>
+        <item>4:00pm</item>
+        <item>5:00pm</item>
+    </string-array>
+    <string-array name="appt_days">
+        <item>Monday</item>
+        <item>Wednesday</item>
+        <item>Friday</item>
+    </string-array>
     <string-array name="Days_of_the_week">
         <item>Monday</item>
         <item>Tuesday</item>

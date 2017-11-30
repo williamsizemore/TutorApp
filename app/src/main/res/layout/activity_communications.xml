@@ -60,7 +60,7 @@
         android:layout_height="43dp"
         android:layout_marginEnd="104dp"
         android:layout_marginStart="104dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/custom_button"
         android:foreground="@drawable/ripple_effect"
         android:onClick="emailTutor"
@@ -85,16 +85,16 @@
 
     <Button
         android:id="@+id/review_button"
-        android:layout_width="146dp"
-        android:layout_height="37dp"
+        android:layout_width="240dp"
+        android:layout_height="46dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/custom_button"
         android:foreground="@drawable/ripple_effect"
         android:isIndicator="true"
-        android:onClick="reviewTutor"
-        android:text="Review"
+        android:onClick="apptTutor"
+        android:text="Make Appointment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/availTimes" />
@@ -108,7 +108,7 @@
         android:layout_marginTop="156dp"
         android:text="0"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.777"
+        app:layout_constraintHorizontal_bias="0.722"
         app:layout_constraintStart_toStartOf="@+id/ratingBar"
         app:layout_constraintTop_toTopOf="parent" />
 

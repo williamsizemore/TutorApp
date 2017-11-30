@@ -83,11 +83,11 @@ public class Communications extends AppCompatActivity {
     /**
      * Send to review page for tutor, passing userData object
      */
-    public void reviewTutor(View view){
-        Intent review = new Intent(this, Review.class);
-        review.putExtra("User",userData);
-        startActivity(review);
-        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+    public void apptTutor(View view){
+        Intent intent = new Intent(Communications.this, Appointments_Menu.class);
+        intent.putExtra("User", userData);
+        startActivityForResult(intent,1);
+
     }
 
     /** public void textTutor(View view)
@@ -156,6 +156,20 @@ public class Communications extends AppCompatActivity {
         super.onPause();
         overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
     }
-
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == 1){
+            if (resultCode == RESULT_OK){
+                userData = data.getExtras().getParcelable("User");
+            }
+        }
+    }
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent();
+        intent.putExtra("User",userData);
+        setResult(RESULT_OK,intent);
+        finish();
+    }
 
 }
