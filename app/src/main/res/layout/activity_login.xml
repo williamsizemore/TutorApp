@@ -314,7 +314,7 @@
 
 
             </LinearLayout>
-            <!-- tutor start time to end time layout -->
+            <!-- tutor sthourtime to hourtime layout -->
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -326,7 +326,7 @@
                     android:layout_width="140dp"
                     android:layout_height="match_parent"
                     android:ems="10"
-                    android:hint="Start time"
+                    android:hint="Start hour"
                     android:inputType="time"
                     android:maxLength="5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -352,7 +352,7 @@
                     android:layout_width="140dp"
                     android:layout_height="match_parent"
                     android:ems="10"
-                    android:hint="End time"
+                    android:hint="End hour"
                     android:inputType="time"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

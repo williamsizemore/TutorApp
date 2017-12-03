@@ -1,7 +1,5 @@
 package project.cse3310;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -9,17 +7,22 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.RatingBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
+import java.util.ArrayList;
 
 public class Communications extends AppCompatActivity {
     private UserData userData;
@@ -30,11 +33,11 @@ public class Communications extends AppCompatActivity {
     private RatingBar ratingBar;
     private TextView ratingNum;
     private TextView times;
-
+    private int contentID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int contentID;
+
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             setContentView(R.layout.activity_communications);
             contentID = 1;
@@ -60,10 +63,9 @@ public class Communications extends AppCompatActivity {
             times = findViewById(R.id.availTimes);
             times.setText(userData.getDays() + " - " + userData.getHours());
         }
+
     }
 
-    /**It works, but actions on what to do after it is done needs to have implemented.
-     Personally I'd say main menu, but if we can go back that works too.**/
     public void callTutor(View view) {
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse("tel:" + userData.getPhone()));
@@ -87,25 +89,16 @@ public class Communications extends AppCompatActivity {
         Intent intent = new Intent(Communications.this, Appointments_Menu.class);
         intent.putExtra("User", userData);
         startActivityForResult(intent,1);
-
+        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
     }
 
-    /** public void textTutor(View view)
-     {
-     Get_Text mesg = new Get_Text();
-     String msg = "";
-     mesg.getMessage(view, msg);
-     //add method to get number from Firebase
-     String numb = "0";  //Dummy so that this compliles
-     Intent intent = new Intent(Intent.ACTION_SEND);
-     intent.setData(Uri.parse("smsto:" + numb));  // This ensures only SMS apps respond
-     /**intent.putExtra("sms_body", msg);
-     if (intent.resolveActivity(getPackageManager()) != null) {
-     startActivity(intent);
-     }
-     }**/
+    public void displayReviews(View view){
+        Intent intent = new Intent(Communications.this, ReviewsPage.class);
+        intent.putExtra("User",userData);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
 
-
+    }
     /*************************************
      * TOP BAR MENU CREATION METHODS     *
      ************************************/
@@ -136,6 +129,7 @@ public class Communications extends AppCompatActivity {
                 else
                     logoutUser();
                 return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -154,7 +148,12 @@ public class Communications extends AppCompatActivity {
     @Override
     public void onPause(){
         super.onPause();
-        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
+        Intent intent = new Intent();
+        intent.putExtra("User", userData);
+        setResult(RESULT_OK, intent);
+        //overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
+        finish();
+
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
@@ -166,10 +165,22 @@ public class Communications extends AppCompatActivity {
     }
     @Override
     public void onBackPressed(){
-        Intent intent = new Intent();
-        intent.putExtra("User",userData);
-        setResult(RESULT_OK,intent);
-        finish();
+        if (contentID == 3) {
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                setContentView(R.layout.activity_communications);
+                contentID = 1;
+            }
+            else {
+                setContentView(R.layout.comm_not_signedin);
+                contentID = 2;
+            }
+        }
+        else {
+            Intent intent = new Intent();
+            intent.putExtra("User", userData);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
 }

@@ -71,6 +71,14 @@ public class Main extends AppCompatActivity{
                 startActivity(new Intent(this, Search.class));
                 overridePendingTransition(R.anim.slide_in,R.anim.slide_out); //slide in and out for starting activity
                 return true;
+            case R.id.schedule:
+                if (userLoggedIn()){
+                    startActivity(new Intent(this, viewSchedule.class));
+                    overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+                }
+                else {
+                    Toast.makeText(Main.this,"You need to be logged in to see schedule",Toast.LENGTH_SHORT).show();
+                }
         }
         return super.onOptionsItemSelected(item);
     }

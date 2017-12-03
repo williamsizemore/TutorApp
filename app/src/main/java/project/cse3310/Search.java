@@ -177,7 +177,7 @@ public class Search extends AppCompatActivity implements AdapterView.OnItemClick
             userData.setName(ds.getValue(UserData.class).getName());
             userData.setCategory(ds.getValue(UserData.class).getCategory());
             userData.setEmail(ds.getValue(UserData.class).getEmail());
-            userData.setState(ds.getValue(UserData.class).getEmail());
+            userData.setState(ds.getValue(UserData.class).getState());
             userData.setUserType(ds.getValue(UserData.class).getUserType());
             userData.setDateOfBirth(ds.getValue(UserData.class).getDateOfBirth());
             userData.setZip(ds.getValue(UserData.class).getZip());

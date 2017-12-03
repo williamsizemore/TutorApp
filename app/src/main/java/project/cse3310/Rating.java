@@ -35,4 +35,12 @@ public class Rating {
         this.tutorName = tutorName;
     }
 
+    @Override
+    public String toString() {
+        return "Rating{" +
+                "rating=" + rating +
+                ", message='" + message + '\'' +
+                ", tutorName='" + tutorName + '\'' +
+                '}';
+    }
 }

@@ -36,20 +36,20 @@ public class Review extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
+        mAuth = FirebaseAuth.getInstance();
+        fDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference tutors = mDatabase.getReference("reviews");
 
         userData = getIntent().getExtras().getParcelable("User");
 
         tutorName = findViewById(R.id.tutor_name);
         ratingBar = findViewById(R.id.set_rating);
         message = findViewById(R.id.review_comment);
-
+        setTitle(userData.getName());
         tutorName.setText(userData.getName());
         ratingBar.setRating(userData.getRating());
 
-        mAuth = FirebaseAuth.getInstance();
-        fDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference tutors = mDatabase.getReference("reviews");
-        DataSnapshot dataSnapshot;
+
 
         tutors.orderByChild("tutorName").equalTo(userData.getName()).addChildEventListener(new ChildEventListener() {
             @Override
@@ -58,22 +58,71 @@ public class Review extends AppCompatActivity {
                 ratings.add(review);
                 calculateAverage();
             }
-
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
             }
-
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
             }
-
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
+    public void submitReview(View view){
+        message.setError(null);
+        if (message.getText().toString().equals("") || message.getText() == null){
+            Toast.makeText(Review.this, "Please Enter Your Comment", Toast.LENGTH_SHORT).show();
+            message.setError("Required");
+        }
+        else {
+            Rating rating = new Rating(ratingBar.getRating(), message.getText().toString(), userData.getName());
+            fDatabase.child("reviews").push().setValue(rating);
+            changeApptStatus();
+            Toast.makeText(Review.this, "Review posted successfully!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, Main.class));
+            //finish();
+            overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
+
+        }
+    }
+
+    /* set status of appointment to reviewed */
+    public void changeApptStatus(){
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        final String[] appointmentID = new String[1];
+        databaseReference.child("appointments").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<Appointment> appointmentList = new ArrayList<>();
+                FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    Appointment temp = ds.getValue(Appointment.class);
+                    if (ds.getValue(Appointment.class).getTutorName().equals(userData.getName()) &&
+                            ds.getValue(Appointment.class).getStudentUID().equals(curUser.getUid()) &&
+                            ds.getValue(Appointment.class).getStatus().equals("valid"))
+                    {
+                        appointmentID[0] = ds.getKey().toString();
+                    }
+                    appointmentList.add(temp);
+                }
+
+                for (int i=0; i<appointmentList.size();i++){
+                    if (appointmentList.get(i).getStudentUID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) &&
+                            appointmentList.get(i).getTutorName().equals(userData.getName()) &&
+                            appointmentList.get(i).getStatus().equals("valid"))
+                    {
+                        appointmentList.get(i).setStatus("reviewed");
+                        Log.d("app status",appointmentList.get(i).toString());
+                        databaseReference.child("appointments").child(appointmentID[0]).setValue(appointmentList.get(i));
+                    }
+                }
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -81,15 +130,8 @@ public class Review extends AppCompatActivity {
         });
     }
 
-    public void submitReview(View view){
-        Rating rating = new Rating(ratingBar.getRating(), message.getText().toString(), userData.getName());
-        fDatabase.child("reviews").push().setValue(rating);
-        //averageRating(userData.getName());
-        finish();
-        Toast.makeText(Review.this,"Review posted successfully!", Toast.LENGTH_SHORT).show();
-    }
     public void calculateAverage(){
-        float avg, sum=0; int count = 1;
+        float avg, sum=0; int count = 0;
         for (int i =0; i < ratings.size(); i++){
             sum += ratings.get(i).getRating();
             count++;

@@ -42,11 +42,7 @@ public class Category extends AppCompatActivity {
         tutors.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                //Intent tutor = new Intent(Category.this,Communications.class);
-                //tutor.putExtra("User", data.get(position));
-                //startActivity(tutor);
                 selectTutor(data.get(position));
-                //overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
             }
         });
 

@@ -23,13 +23,15 @@ public class Appointments_Menu extends AppCompatActivity {
         Intent intent = new Intent(this, makeAppointment.class);
         intent.putExtra("User",userData);
         startActivityForResult(intent, 1);
+        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
     }
 
     public void viewAppointments(View view)
     {
         Intent intent = new Intent(this, viewSchedule.class);
         intent.putExtra("User",userData);
-        startActivityForResult(intent,1);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
     }
     @Override
     public void onBackPressed(){
@@ -46,6 +48,7 @@ public class Appointments_Menu extends AppCompatActivity {
         setResult(RESULT_OK,intent);
         finish();
         super.onPause();
+        overridePendingTransition(R.anim.slide_enter,R.anim.slide_exit);
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
