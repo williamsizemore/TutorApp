@@ -49,8 +49,6 @@ public class Review extends AppCompatActivity {
         tutorName.setText(userData.getName());
         ratingBar.setRating(userData.getRating());
 
-
-
         tutors.orderByChild("tutorName").equalTo(userData.getName()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {

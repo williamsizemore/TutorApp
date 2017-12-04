@@ -44,9 +44,8 @@ public class makeAppointment extends AppCompatActivity {
         setContentView(R.layout.activity_make_appointment);
 
         userData = getIntent().getExtras().getParcelable("User");
-        //Making all the buttons invisible.
+
         confirmButton = findViewById(R.id.button9);
-        //confirmButton.setVisibility(View.INVISIBLE);
         profileName = findViewById(R.id.profile_name);
         profileName.setText(userData.getName() +"\n"+userData.getHours());
         firebaseAuth = FirebaseAuth.getInstance();
@@ -66,7 +65,6 @@ public class makeAppointment extends AppCompatActivity {
         days.setPrompt("Select Day");
 
     }
-
     @Override
     public void onBackPressed(){
         Intent intent = new Intent();
@@ -112,7 +110,6 @@ public class makeAppointment extends AppCompatActivity {
             }
             Log.d("DAYS", availDays[i]);
         }
-
         return availDays;
     }
 
@@ -131,7 +128,7 @@ public class makeAppointment extends AppCompatActivity {
             databaseReference = FirebaseDatabase.getInstance().getReference();
             Random random = new Random();
             String randID = ""+ random.nextInt(1000);
-            Appointment appt = new Appointment(user.getUid(), userData.getName(),daySpinnerView.getSelectedItem().toString(),hourSpinnerView.getSelectedItem().toString(),"valid",randID );   ////////////////
+            Appointment appt = new Appointment(user.getUid(), userData.getName(),daySpinnerView.getSelectedItem().toString(),hourSpinnerView.getSelectedItem().toString(),"valid",randID );
             databaseReference.child("appointments").push().setValue(appt);
             Intent intent = new Intent(this, Payment.class);
             intent.putExtra("User", userData);
@@ -139,8 +136,4 @@ public class makeAppointment extends AppCompatActivity {
             startActivity(intent);
         }
     }
-
-
-
-
 }

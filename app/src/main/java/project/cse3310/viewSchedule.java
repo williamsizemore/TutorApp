@@ -39,16 +39,12 @@ public class viewSchedule extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_schedule);
         //userData = getIntent().getExtras().getParcelable("User");
-        //appt = getIntent().getExtras().getParcelable("Appointment");
 
-        //appointmentsView = findViewById(R.id.appointment);
         apptListView = findViewById(R.id.appt_list);
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("appointments");
         user = FirebaseAuth.getInstance().getCurrentUser();
-        //databaseReference = firebaseDatabase.getReference().child("appointments");
-
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,apptList);
         apptListView.setAdapter(adapter);
@@ -73,10 +69,8 @@ public class viewSchedule extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final String[] name = apptListView.getItemAtPosition(i).toString().split("\n");
                 System.out.println(name[0]);
-                System.out.println("==================================================");
-                databaseReference = firebaseDatabase.getReference();
-                //Query userQuery = databaseReference.orderByChild("name").equalTo(name[0]);
 
+                databaseReference = firebaseDatabase.getReference();
 
                 databaseReference.child("tutors").orderByChild("name").addValueEventListener(new ValueEventListener() {
                     @Override

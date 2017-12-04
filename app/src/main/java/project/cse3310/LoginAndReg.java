@@ -6,22 +6,15 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -32,8 +25,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -42,14 +33,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.ViewAnimator;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -57,12 +46,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static android.Manifest.permission.READ_CONTACTS;
 
 public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cursor> {
     private FirebaseAuth mAuth;
@@ -198,7 +185,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -439,7 +425,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                 cancel = true;
             }
         }
-
         if (cancel) {
             //focus field with error
             if (focusView != null)
@@ -464,6 +449,7 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
                     });
         }
     }
+    /* assign the users data to the database */
     private void setUserData(){
         final String emailRegex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         final String phoneRegex = "\\d{3}-\\d{3}";
@@ -622,7 +608,6 @@ public class LoginAndReg extends AppCompatActivity implements LoaderCallbacks<Cu
     }
 
     private boolean isEmailValid(String regex,String email) {
-        //TODO: Replace this with your own logic
         if (!Pattern.matches(regex, email))
             return false;
         return email.contains("@");
